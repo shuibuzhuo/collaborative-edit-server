@@ -17,9 +17,12 @@ router.get("/", async (ctx) => {
 });
 
 router.get("/collaborate", async (ctx) => {
-  const ws = await ctx.ws(); // retrieve socket
-
-  hocuspocusServer.handleConnection(ws, ctx.request);
+  if (ctx.ws) {
+    const ws = await ctx.ws(); // retrieve socket
+    hocuspocusServer.handleConnection(ws, ctx.request);
+  } else {
+    ctx.body = "collab route";
+  }
 });
 
 app.use(router.routes()).use(router.allowedMethods());

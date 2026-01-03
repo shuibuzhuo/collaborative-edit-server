@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "prod": "pm2 start src/index.js --name collaborate-server",
+    "prod": "pm2 start src/index.js --name collab-server-test",
     "pg-demo": "nodemon demo/pg-demo.js",
     "src-db-client": "nodemon demo/src-db-cilent.js"
   },
