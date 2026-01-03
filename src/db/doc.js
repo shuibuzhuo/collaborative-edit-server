@@ -8,8 +8,8 @@ const { sendEmail } = require("../lib/mailer");
  */
 async function updateDocJsonStr(id, jsonStr) {
   try {
-    const sql = `update "Doc" set content=$1 where id=$2`;
-    const values = [jsonStr, id];
+    const sql = `update "Doc" set content = $1, "updatedAt" = $2 where id = $3`;
+    const values = [jsonStr, new Date(), id];
     const res = await pgClient.query(sql, values);
     return res.rowCount;
   } catch (error) {
