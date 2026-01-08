@@ -29,7 +29,7 @@ async function updateDocJsonStr(id, jsonStr) {
  */
 async function updateDocBinary(id, binary) {
   try {
-    const sql = `update "Doc" set contentBinary=$1 where id=$2`;
+    const sql = `update "Doc" set "contentBinary"=$1 where id=$2`;
     const values = [binary, id];
     const res = await pgClient.query(sql, values);
     return res.rowCount;
