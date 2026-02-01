@@ -4,6 +4,7 @@ const { TiptapTransformer } = require("@hocuspocus/transformer");
 const Y = require("yjs");
 const { Logger } = require("@hocuspocus/extension-logger");
 const { Database } = require("@hocuspocus/extension-database");
+const { Throttle } = require("@hocuspocus/extension-throttle");
 const { updateDocJsonStr, updateDocBinary, getDocById } = require("../db/doc");
 
 // on store document
@@ -28,7 +29,7 @@ async function dbFetch({ documentName }) {
     const bytes = TiptapTransformer.toYdoc(
       JSON.parse(res.content),
       "default",
-      basicExts
+      basicExts,
     );
 
     // yjs doc to binary
@@ -49,6 +50,10 @@ async function dbStore({ documentName, state }) {
 const hocuspocusServer = Server.configure({
   onStoreDocument,
   extensions: [
+    new Throttle({
+      throttle: 15,
+      banTime: 5,
+    }),
     new Logger(),
     new Database({
       fetch: dbFetch, // fetch doc content from db
