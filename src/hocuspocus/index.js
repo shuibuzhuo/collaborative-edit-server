@@ -6,6 +6,8 @@ const { Logger } = require("@hocuspocus/extension-logger");
 const { Database } = require("@hocuspocus/extension-database");
 const { Throttle } = require("@hocuspocus/extension-throttle");
 const { updateDocJsonStr, updateDocBinary, getDocById } = require("../db/doc");
+const { decryptToken } = require("../lib/token");
+const { getShareRelationAccess } = require("../db/share-relation");
 
 // on store document
 async function onStoreDocument(data) {
@@ -47,7 +49,29 @@ async function dbStore({ documentName, state }) {
   console.log("hocuspocus dbStore updated rowCount...", rowCount);
 }
 
+async function onAuthenticate(data) {
+  const { token, documentName } = data
+  if (token == null || !token) throw new Error('token is required');
+
+  const info = decryptToken(token);
+  if (info == null) throw new Error('token is invalid or expired');
+
+  const access = await getShareRelationAccess(documentName, info.userId);
+  if (access == null) throw new Error('no access to this document');
+  if (access === 'READ') {
+    data.connection.readOnly = true
+  }
+
+  return {
+    userId: info.userId,
+  }
+}
+
 const hocuspocusServer = Server.configure({
+  onAuthenticate,
+  async onDisconnect(data) {
+    console.log('hocuspocus onDisconnect context...', data.context);
+  },
   onStoreDocument,
   extensions: [
     new Throttle({
