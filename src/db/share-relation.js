@@ -26,6 +26,17 @@ async function getShareRelationAccess(docId, userId) {
   }
 }
 
+async function updateShareRelationNoticeType(docId, userId) {
+  const sql = `update "ShareRelation" set "noticeType" = 'UPDATE' where "docId" = $1 and "userId" <> $2`
+  const values = [docId, userId]
+  try {
+    const result = await pgClient.query(sql, values)
+  } catch (error) {
+    console.error('updateShareRelationNoticeType error...', error);
+  }
+}
+
 module.exports = {
   getShareRelationAccess,
+  updateShareRelationNoticeType,
 }

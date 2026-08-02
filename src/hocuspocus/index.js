@@ -7,7 +7,7 @@ const { Database } = require("@hocuspocus/extension-database");
 const { Throttle } = require("@hocuspocus/extension-throttle");
 const { updateDocJsonStr, updateDocBinary, getDocById } = require("../db/doc");
 const { decryptToken } = require("../lib/token");
-const { getShareRelationAccess } = require("../db/share-relation");
+const { getShareRelationAccess, updateShareRelationNoticeType } = require("../db/share-relation");
 
 // on store document
 async function onStoreDocument(data) {
@@ -16,6 +16,9 @@ async function onStoreDocument(data) {
   const jsonStr = JSON.stringify(json);
   const rowCount = await updateDocJsonStr(documentName, jsonStr);
   console.log("hocuspocus onStoreDocument updated rowCount...", rowCount);
+
+  const context = data.context || {};
+  await updateShareRelationNoticeType(documentName, context.userId);
 }
 
 // on db fetch doc
